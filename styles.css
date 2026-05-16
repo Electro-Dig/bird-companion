@@ -1,0 +1,900 @@
+:root {
+  color-scheme: light;
+  background: transparent;
+  color: #17140f;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+.companion {
+  --accent: #e86a37;
+  --leaf: #79a957;
+  --ink: #17140f;
+  --panel: rgba(255, 250, 239, 0.9);
+  --bird-facing-scale: 1;
+  position: relative;
+  width: min(100vw, 282px);
+  height: min(100vh, 268px);
+  outline: none;
+  overflow: hidden;
+  background: transparent;
+  -webkit-app-region: drag;
+}
+
+.companion[data-mood="busy"] {
+  --accent: #db4f36;
+  --leaf: #50a16d;
+}
+
+.companion[data-mood="alert"] {
+  --accent: #c93546;
+  --leaf: #c89437;
+}
+
+.companion[data-mood="chorus"] {
+  --accent: #5f77ba;
+  --leaf: #73aa4f;
+}
+
+.companion[data-mood="sleepy"] {
+  --accent: #657887;
+  --leaf: #8a9b77;
+}
+
+.companion[data-facing="left"] {
+  --bird-facing-scale: -1;
+}
+
+.window-actions {
+  position: absolute;
+  z-index: 8;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 5px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  -webkit-app-region: no-drag;
+}
+
+.companion:hover .window-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.typing-stats {
+  position: absolute;
+  z-index: 8;
+  top: 38px;
+  right: 8px;
+  display: grid;
+  min-width: 84px;
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid rgba(28, 22, 15, 0.12);
+  border-radius: 7px;
+  background: rgba(255, 253, 247, 0.84);
+  box-shadow: 0 9px 22px rgba(28, 20, 12, 0.13);
+  color: rgba(23, 20, 15, 0.58);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  line-height: 1.1;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  -webkit-app-region: no-drag;
+}
+
+.companion:hover .typing-stats {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.typing-stats span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  text-transform: uppercase;
+}
+
+.typing-stats i {
+  font-style: normal;
+}
+
+.typing-stats b {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.icon-button {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid rgba(28, 22, 15, 0.14);
+  border-radius: 7px;
+  background: rgba(255, 253, 247, 0.82);
+  color: rgba(23, 20, 15, 0.68);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(28, 20, 12, 0.12);
+  cursor: pointer;
+}
+
+.icon-button:hover,
+.icon-button[aria-pressed="true"] {
+  color: #fffaf1;
+  border-color: transparent;
+  background: var(--accent);
+}
+
+.icon-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.language-button {
+  width: 34px;
+  font-size: 10px;
+}
+
+.bird-stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.bird-direction {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transform: scaleX(var(--bird-facing-scale));
+  transform-origin: 50% 50%;
+}
+
+.halo {
+  position: absolute;
+  width: 146px;
+  height: 146px;
+  border: 1px solid rgba(31, 27, 20, 0.07);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 250, 236, 0.9) 0 38%, rgba(255, 250, 236, 0.08) 68%, rgba(255, 250, 236, 0) 100%);
+  box-shadow: 0 20px 48px rgba(36, 32, 22, 0.12);
+  transform: translateY(-6px);
+}
+
+.bird-mark {
+  position: relative;
+  z-index: 4;
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 18px 16px rgba(24, 18, 12, 0.2));
+  transform: translateY(0);
+  transform-origin: 50% 82%;
+  animation: perch-breathe 2800ms ease-in-out infinite;
+  transition: filter 180ms ease, transform 180ms ease;
+  will-change: transform, filter;
+}
+
+.bird-rig {
+  position: relative;
+  z-index: 4;
+  display: none;
+  width: 150px;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 18px 16px rgba(24, 18, 12, 0.2));
+  transform: translateY(0);
+  transform-origin: 50% 82%;
+  animation: perch-breathe 2800ms ease-in-out infinite;
+  transition: filter 180ms ease, transform 180ms ease;
+  will-change: transform, filter;
+}
+
+.companion[data-bird-style="natural"] .bird-rig {
+  display: block;
+}
+
+.companion[data-bird-style="natural"] .bird-mark {
+  display: none;
+}
+
+.rig-wing,
+.rig-beak-upper,
+.rig-beak-lower,
+.rig-tail,
+.rig-leaf,
+.rig-feet,
+.rig-eye,
+.rig-cheek {
+  transform-box: fill-box;
+}
+
+.rig-wing {
+  transform-origin: 82% 40%;
+}
+
+.rig-beak-upper {
+  transform-origin: 0% 70%;
+}
+
+.rig-beak-lower {
+  transform-origin: 0% 20%;
+}
+
+.rig-tail {
+  transform-origin: 82% 38%;
+}
+
+.rig-leaf {
+  transform-origin: 22% 80%;
+}
+
+.rig-feet {
+  transform-origin: 50% 0%;
+}
+
+.rig-eye-open {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: rig-idle-blink 5600ms ease-in-out infinite;
+}
+
+.rig-eye-closed {
+  opacity: 0;
+}
+
+.companion[data-motion="tilt"] .bird-mark {
+  animation: tilt 520ms cubic-bezier(.2, .8, .22, 1) both;
+}
+
+.companion[data-motion="tilt"] .bird-rig {
+  animation: tilt 520ms cubic-bezier(.2, .8, .22, 1) both;
+}
+
+.companion[data-motion="flutter"] .bird-mark {
+  animation: flutter 480ms cubic-bezier(.2, .9, .3, 1) both;
+}
+
+.companion[data-motion="flutter"] .bird-rig {
+  animation: flutter 480ms cubic-bezier(.2, .9, .3, 1) both;
+}
+
+.companion[data-motion="startle"] .bird-mark {
+  animation: startle 460ms cubic-bezier(.16, .9, .2, 1) both;
+}
+
+.companion[data-motion="startle"] .bird-rig {
+  animation: startle 460ms cubic-bezier(.16, .9, .2, 1) both;
+}
+
+.companion[data-motion="chorus-hop"] .bird-mark {
+  animation: chorus-hop 760ms cubic-bezier(.22, .85, .24, 1) both;
+}
+
+.companion[data-motion="chorus-hop"] .bird-rig {
+  animation: chorus-hop 760ms cubic-bezier(.22, .85, .24, 1) both;
+}
+
+.companion[data-motion="nestle"] .bird-mark {
+  animation: nestle 720ms ease both;
+  filter: saturate(0.76) drop-shadow(0 13px 14px rgba(24, 18, 12, 0.17));
+}
+
+.companion[data-motion="nestle"] .bird-rig {
+  animation: nestle 720ms ease both;
+  filter: saturate(0.76) drop-shadow(0 13px 14px rgba(24, 18, 12, 0.17));
+}
+
+.companion[data-motion="tilt"] .rig-beak-lower,
+.companion[data-motion="flutter"] .rig-beak-lower,
+.companion[data-motion="startle"] .rig-beak-lower {
+  animation: rig-beak-open 360ms cubic-bezier(.2, .82, .2, 1) both;
+}
+
+.companion[data-motion="tilt"] .rig-beak-upper,
+.companion[data-motion="flutter"] .rig-beak-upper,
+.companion[data-motion="startle"] .rig-beak-upper {
+  animation: rig-beak-lift 360ms cubic-bezier(.2, .82, .2, 1) both;
+}
+
+.companion[data-motion="chorus-hop"] .rig-beak-lower {
+  animation: rig-beak-chatter 760ms ease both;
+}
+
+.companion[data-motion="chorus-hop"] .rig-beak-upper {
+  animation: rig-beak-tweet 760ms ease both;
+}
+
+.companion[data-motion="flutter"] .rig-wing,
+.companion[data-motion="chorus-hop"] .rig-wing {
+  animation: rig-wing-flap 520ms cubic-bezier(.2, .85, .2, 1) both;
+}
+
+.companion[data-motion="startle"] .rig-wing {
+  animation: rig-wing-startle 440ms cubic-bezier(.16, .9, .2, 1) both;
+}
+
+.companion[data-motion="tilt"] .rig-tail,
+.companion[data-motion="flutter"] .rig-tail,
+.companion[data-motion="chorus-hop"] .rig-tail {
+  animation: rig-tail-flick 520ms ease both;
+}
+
+.companion[data-motion="tilt"] .rig-leaf,
+.companion[data-motion="flutter"] .rig-leaf,
+.companion[data-motion="chorus-hop"] .rig-leaf,
+.companion[data-motion="startle"] .rig-leaf {
+  animation: rig-leaf-nod 520ms ease both;
+}
+
+.companion[data-motion="startle"] .rig-eye-open {
+  animation: rig-eye-pop 460ms ease both;
+}
+
+.companion[data-motion="tilt"] .rig-cheek,
+.companion[data-motion="flutter"] .rig-cheek,
+.companion[data-motion="chorus-hop"] .rig-cheek,
+.companion[data-motion="startle"] .rig-cheek {
+  animation: rig-cheek-pulse 460ms ease both;
+}
+
+.companion[data-motion="nestle"] .rig-eye-open {
+  opacity: 0;
+  animation: none;
+}
+
+.companion[data-motion="nestle"] .rig-eye-closed {
+  opacity: 1;
+}
+
+.companion[data-motion="nestle"] .rig-wing {
+  animation: rig-wing-tuck 720ms ease both;
+}
+
+.companion[data-motion="chorus-hop"] .rig-feet,
+.companion[data-motion="flutter"] .rig-feet {
+  animation: rig-feet-grip 520ms ease both;
+}
+
+.branch {
+  position: absolute;
+  z-index: 3;
+  right: 36px;
+  bottom: 60px;
+  left: 34px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3a2d22, #7c5f3e 58%, #2f704d);
+  box-shadow: 0 11px 14px rgba(26, 20, 13, 0.16);
+  transform: rotate(-2.5deg);
+  transform-origin: 30% 50%;
+}
+
+.branch::after {
+  position: absolute;
+  right: 34px;
+  bottom: 5px;
+  width: 58px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--leaf);
+  content: "";
+  transform: rotate(-25deg);
+  transform-origin: 0 50%;
+}
+
+.companion[data-motion="flutter"] .branch {
+  animation: branch-bounce 420ms ease both;
+}
+
+.companion[data-motion="startle"] .branch {
+  animation: branch-snap 400ms ease both;
+}
+
+.companion[data-motion="chorus-hop"] .branch {
+  animation: branch-sway 720ms ease both;
+}
+
+.companion[data-motion="nestle"] .branch {
+  animation: branch-settle 700ms ease both;
+}
+
+.pulse-field,
+.echo-field,
+.chirp-field,
+.feather-field {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.pulse-field i {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  animation: signal 760ms ease-out var(--delay) forwards;
+}
+
+.echo-field i {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 84px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 52% 44%, rgba(232, 106, 55, 0.18), rgba(232, 106, 55, 0));
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  animation: echo-bird 820ms ease-out var(--delay) forwards;
+}
+
+.echo-field i::before {
+  position: absolute;
+  inset: 15px 22px;
+  border-radius: 50%;
+  background: rgba(44, 97, 111, 0.22);
+  content: "";
+}
+
+.chirp-field {
+  z-index: 5;
+}
+
+.chirp-field i {
+  position: absolute;
+  left: 67%;
+  top: 38%;
+  width: 14px;
+  height: 14px;
+  border-top: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  border-radius: 0 999px 0 0;
+  opacity: 0;
+  transform: rotate(20deg) scale(var(--scale));
+  animation: chirp-mark 640ms cubic-bezier(.2, .8, .22, 1) var(--delay) forwards;
+}
+
+.chirp-field i::after {
+  position: absolute;
+  right: -8px;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+}
+
+.feather-field i {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 8px;
+  height: 22px;
+  border-radius: 999px 999px 999px 0;
+  background: linear-gradient(180deg, rgba(255, 210, 129, 0.95), rgba(48, 95, 115, 0.75));
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(var(--r));
+  animation: feather-fall 940ms cubic-bezier(.16, .8, .28, 1) var(--delay) forwards;
+}
+
+.mini-panel {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  left: 18px;
+  z-index: 7;
+  display: grid;
+  gap: 2px;
+  max-width: 246px;
+  padding: 9px 11px;
+  border: 1px solid rgba(35, 30, 22, 0.11);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px rgba(28, 24, 17, 0.14);
+  opacity: 0;
+  transform: translateY(9px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  -webkit-app-region: no-drag;
+}
+
+.companion:hover .mini-panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mini-panel span {
+  color: var(--accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mini-panel strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-panel small {
+  overflow: hidden;
+  color: rgba(23, 20, 15, 0.58);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-panel b {
+  color: rgba(23, 20, 15, 0.76);
+}
+
+@keyframes tilt {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  46% {
+    transform: translateY(-3px) rotate(-7deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+}
+
+@keyframes perch-breathe {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) rotate(-1deg) scale(1.015);
+  }
+}
+
+@keyframes rig-idle-blink {
+  0%,
+  92%,
+  96%,
+  100% {
+    transform: scaleY(1);
+  }
+  94% {
+    transform: scaleY(0.12);
+  }
+}
+
+@keyframes rig-beak-open {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  42% {
+    transform: rotate(27deg) translateY(4px);
+  }
+}
+
+@keyframes rig-beak-lift {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  42% {
+    transform: rotate(-6deg) translateY(-1px);
+  }
+}
+
+@keyframes rig-beak-chatter {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  18%,
+  52%,
+  78% {
+    transform: rotate(25deg) translateY(4px);
+  }
+  32%,
+  64% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes rig-beak-tweet {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  18%,
+  52%,
+  78% {
+    transform: rotate(-5deg) translateY(-1px);
+  }
+}
+
+@keyframes rig-wing-flap {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  28% {
+    transform: rotate(-34deg) translateY(-16px) translateX(4px) scale(1.04);
+  }
+  58% {
+    transform: rotate(13deg) translateY(5px) translateX(-2px);
+  }
+}
+
+@keyframes rig-wing-startle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  36% {
+    transform: rotate(-44deg) translateY(-18px) translateX(5px) scale(1.06);
+  }
+  66% {
+    transform: rotate(12deg) translateY(4px);
+  }
+}
+
+@keyframes rig-wing-tuck {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  52% {
+    transform: rotate(12deg) translateY(10px) translateX(-3px) scale(0.9);
+  }
+}
+
+@keyframes rig-tail-flick {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  38% {
+    transform: rotate(-15deg) translateY(-5px);
+  }
+  68% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes rig-leaf-nod {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  38% {
+    transform: rotate(-14deg) translateY(-3px);
+  }
+  68% {
+    transform: rotate(7deg);
+  }
+}
+
+@keyframes rig-eye-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  36% {
+    transform: scale(1.22);
+  }
+}
+
+@keyframes rig-cheek-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.76;
+    transform: scale(1.22);
+  }
+}
+
+@keyframes rig-feet-grip {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  42% {
+    transform: translateY(3px) scaleY(0.96);
+  }
+}
+
+@keyframes flutter {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  28% {
+    transform: translateY(-13px) rotate(-5deg) scale(1.03);
+  }
+  58% {
+    transform: translateY(-5px) rotate(6deg) scale(1.02);
+  }
+}
+
+@keyframes startle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  35% {
+    transform: translateY(-21px) rotate(9deg) scale(1.08);
+  }
+  62% {
+    transform: translateY(-3px) rotate(-5deg) scale(1.03);
+  }
+}
+
+@keyframes chorus-hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  24% {
+    transform: translateY(-18px) rotate(-8deg) scale(1.02);
+  }
+  52% {
+    transform: translateY(-6px) rotate(8deg) scale(1.03);
+  }
+  76% {
+    transform: translateY(-13px) rotate(-4deg) scale(1.01);
+  }
+}
+
+@keyframes nestle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  52% {
+    transform: translateY(10px) rotate(-2deg) scale(0.94);
+  }
+}
+
+@keyframes branch-bounce {
+  0%,
+  100% {
+    transform: rotate(-2.5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-1deg) translateY(5px);
+  }
+}
+
+@keyframes branch-snap {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  35% {
+    transform: rotate(-7deg) translateY(2px);
+  }
+  65% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes branch-sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  42% {
+    transform: rotate(2deg);
+  }
+  70% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes branch-settle {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(-3.6deg) translateY(3px);
+  }
+}
+
+@keyframes signal {
+  from {
+    opacity: 0.44;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.6);
+  }
+}
+
+@keyframes echo-bird {
+  0% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) translateX(0) scale(0.62);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(calc(var(--side) * 48px)) translateY(-18px) scale(1.3);
+  }
+}
+
+@keyframes feather-fall {
+  0% {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) rotate(var(--r));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x)), 74px) rotate(calc(var(--r) + 96deg));
+  }
+}
+
+@keyframes chirp-mark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(20deg) scale(0.42);
+  }
+  34% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(26px, -22px) rotate(20deg) scale(calc(var(--scale) + 0.75));
+  }
+}
+
+@keyframes left-chirp-mark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(210deg) scale(0.42);
+  }
+  34% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-28px, -20px) rotate(210deg) scale(calc(var(--scale) + 0.7));
+  }
+}

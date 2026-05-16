@@ -1,0 +1,22 @@
+{
+  "name": "bird-companion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small always-on-top desktop bird companion driven by typing rhythm.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Electro-Dig/bird-companion.git"
+  },
+  "main": "main.cjs",
+  "scripts": {
+    "test": "node tests/feedback-engine.test.mjs && node tests/global-key-events.test.mjs && node tests/bird-appearance.test.mjs && node tests/i18n.test.mjs && node tests/window-orientation.test.mjs && node tests/typing-stats.test.mjs",
+    "start": "electron .",
+    "smoke": "electron . --smoke-test",
+    "bootstrap": "npm.cmd install --no-audit --no-fund"
+  },
+  "devDependencies": {
+    "electron": "31.7.7",
+    "uiohook-napi": "1.5.5"
+  }
+}

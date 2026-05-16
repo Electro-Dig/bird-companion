@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bird Companion</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="data/samples-data.js"></script>
+</head>
+<body>
+  <main class="companion" data-companion tabindex="0" aria-label="Bird Companion">
+    <nav class="window-actions" aria-label="Window actions">
+      <button class="icon-button" type="button" data-mute aria-pressed="false" title="Mute">M</button>
+      <button class="icon-button" type="button" data-global aria-pressed="false" title="Toggle global listening">G</button>
+      <button class="icon-button language-button" type="button" data-language title="Switch language">中文</button>
+      <button class="icon-button" type="button" data-minimize title="Minimize">-</button>
+      <button class="icon-button" type="button" data-close title="Close">x</button>
+    </nav>
+    <section class="typing-stats" data-typing-stats aria-label="Typing stats">
+      <span><i data-stat-label="keys">keys</i> <b data-total-keys>0</b></span>
+      <span><i data-stat-label="session">session</i> <b data-session-keys>0</b></span>
+      <span><i data-stat-label="kps">kps</i> <b data-current-kps>0.0</b></span>
+    </section>
+    <section class="bird-stage" aria-live="polite">
+      <div class="halo" aria-hidden="true"></div>
+      <div class="echo-field" data-echo-field aria-hidden="true"></div>
+      <div class="chirp-field" data-chirp-field aria-hidden="true"></div>
+      <div class="bird-direction" data-bird-direction>
+      <svg class="bird-rig" viewBox="0 0 240 190" role="img" aria-label="Natural kawaii bird companion" data-bird-rig>
+        <defs>
+          <radialGradient id="rig-body" cx="38%" cy="28%" r="78%">
+            <stop offset="0" stop-color="#ffd58a"/>
+            <stop offset="0.45" stop-color="#f08a43"/>
+            <stop offset="0.78" stop-color="#8d6a5f"/>
+            <stop offset="1" stop-color="#2e5f73"/>
+          </radialGradient>
+          <linearGradient id="rig-belly" x1="76" x2="168" y1="82" y2="150" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#fff1c4"/>
+            <stop offset="1" stop-color="#f4aa63"/>
+          </linearGradient>
+          <linearGradient id="rig-wing" x1="74" x2="166" y1="82" y2="137" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#153a56"/>
+            <stop offset="0.62" stop-color="#236e86"/>
+            <stop offset="1" stop-color="#3f93a8"/>
+          </linearGradient>
+          <linearGradient id="rig-tail" x1="24" x2="78" y1="126" y2="101" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#143449"/>
+            <stop offset="1" stop-color="#287c94"/>
+          </linearGradient>
+          <filter id="rig-soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="#21180f" flood-opacity="0.23"/>
+          </filter>
+        </defs>
+
+        <g class="rig-bird" filter="url(#rig-soft-shadow)">
+          <g class="rig-tail">
+            <path d="M55 127c-18 10-34 12-49 7 13-14 29-23 48-27z" fill="url(#rig-tail)"/>
+          </g>
+          <g class="rig-beak">
+            <path class="rig-beak-upper" d="M183 77c18 4 32 13 42 27-17 2-32-2-45-12z" fill="#f36f38"/>
+            <path class="rig-beak-lower" d="M181 91c15 10 29 14 44 13-14 6-29 4-45-4z" fill="#d7532d"/>
+          </g>
+          <g class="rig-body">
+            <path d="M45 91c0-43 33-75 79-75 45 0 82 29 82 72 0 49-38 79-86 79-45 0-75-29-75-76z" fill="url(#rig-body)"/>
+            <path class="rig-belly" d="M90 66c-11 19-12 45-2 66-21-9-34-25-35-47 0-17 15-27 37-19z" fill="url(#rig-belly)" opacity="0.2"/>
+          </g>
+          <g class="rig-wing">
+            <path d="M71 104c12-24 45-37 88-28-6 34-32 58-73 68-14-10-19-24-15-40z" fill="url(#rig-wing)"/>
+            <path d="M92 103c16-12 37-17 62-14-13 11-31 17-55 19m-16 16c18-9 38-12 59-8-14 10-31 17-51 20" fill="none" stroke="#72b2c4" stroke-linecap="round" stroke-width="3" opacity="0.32"/>
+          </g>
+          <g class="rig-leaf">
+            <path d="M128 33c10-20 28-31 53-31-7 21-24 35-48 42z" fill="#79ad58"/>
+            <path d="M132 34c7-10 18-17 32-21-5 12-15 20-29 26z" fill="#93c36d" opacity="0.72"/>
+          </g>
+          <g class="rig-eye">
+            <circle class="rig-eye-open" cx="163" cy="58" r="11" fill="#16120d"/>
+            <circle cx="167" cy="54" r="3.4" fill="#fff9e8"/>
+            <path class="rig-eye-closed" d="M153 59c7 5 15 5 22 0" fill="none" stroke="#16120d" stroke-linecap="round" stroke-width="4"/>
+          </g>
+          <circle class="rig-cheek" cx="157" cy="75" r="6" fill="#f6a178" opacity="0.5"/>
+          <g class="rig-feet">
+            <path d="M123 164c-2 13-9 22-17 26m29-26c3 12 10 20 19 25" fill="none" stroke="#3b2c20" stroke-linecap="round" stroke-width="7"/>
+            <path d="M105 189c9-1 15-3 20-8m28 8c-8 0-15-3-20-8" fill="none" stroke="#3b2c20" stroke-linecap="round" stroke-width="4"/>
+          </g>
+        </g>
+      </svg>
+      <img class="bird-mark" src="bird-mark.svg" alt="" data-bird-mark />
+      </div>
+      <div class="feather-field" data-feather-field aria-hidden="true"></div>
+      <div class="branch" aria-hidden="true"></div>
+      <div class="pulse-field" data-pulse-field aria-hidden="true"></div>
+    </section>
+
+    <aside class="mini-panel" data-mini-panel>
+      <span data-mood-label>Idle branch</span>
+      <strong data-bird-name>Silent branch</strong>
+      <small><b data-listener-mode>Focus</b> / <span data-bird-meta>waiting</span></small>
+    </aside>
+  </main>
+
+  <script type="module">
+    import { mountCompanion } from './companion.mjs';
+
+    mountCompanion({
+      root: document.querySelector('[data-companion]'),
+      lab: window.SOUND_LAB_DATA,
+      dataBaseUrl: new URL('./', window.location.href).href
+    });
+  </script>
+</body>
+</html>
