@@ -156,7 +156,7 @@ async function startGlobalListening() {
         import('./global-key-events.mjs')
       ]);
       globalHookState.hook = uIOhook;
-      globalHookState.translate = createGlobalKeyTranslator(UiohookKey, { anonymousLetters: true });
+      globalHookState.translate = createGlobalKeyTranslator(UiohookKey, { anonymousLetters: false });
     }
 
     globalHookState.keydownHandler = event => {

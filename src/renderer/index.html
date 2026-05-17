@@ -20,21 +20,38 @@
     <section class="key-badge" data-key-badge aria-label="Total key count">
       <span data-key-badge-label>keys</span>
       <b data-total-keys-badge>0</b>
+      <button class="key-detail-button" type="button" data-stats-toggle aria-expanded="false" title="Key details">
+        <i aria-hidden="true"></i>
+      </button>
     </section>
 
-    <section class="typing-stats" data-typing-stats aria-label="Typing stats">
-      <span><i data-stat-label="total">total</i> <b data-total-keys>0</b></span>
-      <span><i data-stat-label="session">session</i> <b data-session-keys>0</b></span>
-      <span><i data-stat-label="kps">kps</i> <b data-current-kps>0.0</b></span>
-    </section>
+    <aside class="stats-popover" data-stats-popover aria-label="Typing details">
+      <div class="typing-stats" data-typing-stats>
+        <span><i data-stat-label="total">total</i> <b data-total-keys>0</b></span>
+        <span><i data-stat-label="today">today</i> <b data-today-keys>0</b></span>
+        <span><i data-stat-label="session">session</i> <b data-session-keys>0</b></span>
+        <span><i data-stat-label="kps">kps</i> <b data-current-kps>0.0</b></span>
+      </div>
+      <div class="date-strip">
+        <button type="button" data-date-prev title="Previous date">&lt;</button>
+        <strong data-current-date>Today</strong>
+        <button type="button" data-date-next title="Next date">&gt;</button>
+      </div>
+      <div class="key-grid" data-key-grid aria-label="Key distribution"></div>
+      <ol class="top-keys" data-top-keys></ol>
+    </aside>
 
     <section class="sound-controls" data-sound-controls aria-label="Sound settings">
-      <button class="sound-button" type="button" data-frequency title="Feedback frequency">1</button>
-      <span><i data-sound-label="rate">Rate</i></span>
-      <button class="sound-button" type="button" data-volume-down title="Lower volume">-</button>
-      <strong data-volume-value>78%</strong>
-      <button class="sound-button" type="button" data-volume-up title="Raise volume">+</button>
-      <span><i data-sound-label="volume">Vol</i></span>
+      <div class="rate-switch" role="group" aria-label="Feedback frequency">
+        <button class="rate-option" type="button" data-rate-option="1" title="Every key">1</button>
+        <button class="rate-option" type="button" data-rate-option="3" title="Every 3 keys">3</button>
+        <button class="rate-option" type="button" data-rate-option="5" title="Every 5 keys">5</button>
+      </div>
+      <label class="volume-control">
+        <span class="volume-icon" aria-hidden="true"></span>
+        <input type="range" min="0" max="100" step="5" data-volume-range aria-label="Volume" />
+      </label>
+      <strong class="volume-readout" data-volume-value>78%</strong>
     </section>
 
     <section class="bird-stage" data-bird-stage aria-live="polite">

@@ -29,6 +29,8 @@ import {
   assert.equal(getCopy('unknown').stats.keys, 'keys');
   assert.equal(getCopy('zh').settings.rate, '频');
   assert.equal(getCopy('zh').settings.volume, '音');
+  assert.equal(getCopy('en').stats.today, 'today');
+  assert.equal(getCopy('zh').stats.today, '今天');
 }
 
 console.log('i18n tests passed');

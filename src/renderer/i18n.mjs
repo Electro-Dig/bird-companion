@@ -14,8 +14,10 @@ const COPY = {
     stats: {
       keys: 'keys',
       total: 'total',
+      today: 'today',
       session: 'session',
-      kps: 'kps'
+      kps: 'kps',
+      noData: 'no keys yet'
     },
     modes: {
       focus: 'Focus',
@@ -56,8 +58,10 @@ const COPY = {
     stats: {
       keys: '键',
       total: '总数',
+      today: '今天',
       session: '本次',
-      kps: '键/秒'
+      kps: '键/秒',
+      noData: '暂无按键'
     },
     modes: {
       focus: '聚焦',
