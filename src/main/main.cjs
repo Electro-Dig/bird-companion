@@ -24,10 +24,10 @@ if (isSmokeMode) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 282,
-    height: 268,
-    minWidth: 240,
-    minHeight: 220,
+    width: 320,
+    height: 286,
+    minWidth: 300,
+    minHeight: 250,
     frame: false,
     transparent: true,
     resizable: false,
@@ -35,6 +35,7 @@ function createWindow() {
     show: !isSmokeMode,
     alwaysOnTop: true,
     backgroundColor: '#00000000',
+    icon: path.join(__dirname, '..', '..', 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,

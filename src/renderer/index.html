@@ -13,6 +13,8 @@
       <button class="icon-button" type="button" data-mute aria-pressed="false" title="Mute">M</button>
       <button class="icon-button" type="button" data-global aria-pressed="false" title="Toggle global listening">G</button>
       <button class="icon-button language-button" type="button" data-language title="Switch language">中</button>
+      <button class="icon-button support-button" type="button" data-support title="Support">♡</button>
+      <button class="icon-button help-button" type="button" data-help title="Help">?</button>
       <button class="icon-button" type="button" data-minimize title="Minimize">-</button>
       <button class="icon-button" type="button" data-close title="Close">x</button>
     </nav>
@@ -21,9 +23,26 @@
       <span data-key-badge-label>keys</span>
       <b data-total-keys-badge>0</b>
       <button class="key-detail-button" type="button" data-stats-toggle aria-expanded="false" title="Key details">
-        <i aria-hidden="true"></i>
+        <span aria-hidden="true">⋯</span>
       </button>
     </section>
+
+    <aside class="guide-popover" data-guide-popover aria-label="Usage guide">
+      <strong data-guide-title>Quick guide</strong>
+      <ul>
+        <li data-guide-line="drag">Drag the bird body to place it.</li>
+        <li data-guide-line="global">G listens across apps by default.</li>
+        <li data-guide-line="sound">Use 1/3/5 and the slider to tune calls.</li>
+        <li data-guide-line="stats">Open keys for daily key heatmaps.</li>
+      </ul>
+      <small data-guide-note>Only aggregate key counts are stored locally.</small>
+    </aside>
+
+    <aside class="support-popover" data-support-popover aria-label="Support">
+      <strong data-support-title>Buy me a coffee</strong>
+      <p data-support-copy>If this bird keeps you company, you can support the maker.</p>
+      <img src="assets/support-wechat-card.png" alt="WeChat Pay QR code" data-support-qr />
+    </aside>
 
     <aside class="stats-popover" data-stats-popover aria-label="Typing details">
       <div class="typing-stats" data-typing-stats>

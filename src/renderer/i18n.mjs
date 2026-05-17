@@ -8,6 +8,8 @@ const COPY = {
       unmute: 'Unmute',
       global: 'Toggle global listening',
       language: '中',
+      help: 'Help',
+      support: 'Support the maker',
       minimize: 'Minimize',
       close: 'Close'
     },
@@ -29,6 +31,20 @@ const COPY = {
     settings: {
       rate: 'Rate',
       volume: 'Vol'
+    },
+    guide: {
+      title: 'Quick guide',
+      lines: {
+        drag: 'Drag the bird body to place it.',
+        global: 'G listens across apps by default.',
+        sound: 'Use 1/3/5 and the slider to tune calls.',
+        stats: 'Open keys for daily key heatmaps.'
+      },
+      note: 'Only aggregate key counts are stored locally.'
+    },
+    support: {
+      title: 'Buy me a coffee',
+      copy: 'If this bird keeps you company, you can support the maker with WeChat Pay.'
     },
     moods: {
       idle: 'Idle branch',
@@ -52,6 +68,8 @@ const COPY = {
       unmute: '取消静音',
       global: '切换全局监听',
       language: 'EN',
+      help: '使用指南',
+      support: '支持参与者',
       minimize: '最小化',
       close: '关闭'
     },
@@ -73,6 +91,20 @@ const COPY = {
     settings: {
       rate: '频',
       volume: '音'
+    },
+    guide: {
+      title: '使用指南',
+      lines: {
+        drag: '拖动小鸟身体来摆放位置。',
+        global: 'G 默认开启，监听全局键盘。',
+        sound: '用 1/3/5 和音量条调节鸟叫。',
+        stats: '打开 keys 查看每日按键热区。'
+      },
+      note: '本地只保存聚合按键次数，不保存输入文本。'
+    },
+    support: {
+      title: '给我一杯咖啡',
+      copy: '如果这只小鸟陪你工作，可以用微信支付支持创作者。'
     },
     moods: {
       idle: '安静枝头',

@@ -47,6 +47,7 @@ export function mountCompanion({
     facing: 'right',
     sound: readSavedSoundSettings(),
     statsOpen: false,
+    infoPanel: '',
     selectedDate: '',
     feedbackKeyCount: 0,
     typing: createInitialTypingStats(readSavedTypingStats()),
@@ -95,6 +96,13 @@ export function mountCompanion({
     mute: root.querySelector('[data-mute]'),
     global: root.querySelector('[data-global]'),
     language: root.querySelector('[data-language]'),
+    support: root.querySelector('[data-support]'),
+    help: root.querySelector('[data-help]'),
+    guideTitle: root.querySelector('[data-guide-title]'),
+    guideLines: Array.from(root.querySelectorAll('[data-guide-line]')),
+    guideNote: root.querySelector('[data-guide-note]'),
+    supportTitle: root.querySelector('[data-support-title]'),
+    supportCopy: root.querySelector('[data-support-copy]'),
     minimize: root.querySelector('[data-minimize]'),
     close: root.querySelector('[data-close]')
   };
@@ -116,8 +124,11 @@ export function mountCompanion({
     }
   });
 
-  window.birdCompanionShell?.getGlobalStatus?.().then(status => {
+  window.birdCompanionShell?.getGlobalStatus?.().then(async status => {
     applyGlobalStatus(status, runtime, els);
+    if (!runtime.global.enabled) {
+      await enableGlobalListening(runtime, els);
+    }
     render(root, els, runtime);
   }).catch(() => {});
 
@@ -164,9 +175,22 @@ export function mountCompanion({
     render(root, els, runtime);
     root.focus();
   });
+  els.help?.addEventListener('click', () => {
+    runtime.infoPanel = runtime.infoPanel === 'guide' ? '' : 'guide';
+    runtime.statsOpen = false;
+    render(root, els, runtime);
+    root.focus();
+  });
+  els.support?.addEventListener('click', () => {
+    runtime.infoPanel = runtime.infoPanel === 'support' ? '' : 'support';
+    runtime.statsOpen = false;
+    render(root, els, runtime);
+    root.focus();
+  });
   els.statsToggle?.addEventListener('click', event => {
     event.stopPropagation();
     runtime.statsOpen = !runtime.statsOpen;
+    runtime.infoPanel = '';
     render(root, els, runtime);
     root.focus();
   });
@@ -260,6 +284,8 @@ function render(root, els, runtime, feedback = null) {
   root.dataset.mood = mood;
   root.dataset.birdStyle = style.id;
   root.dataset.statsOpen = String(runtime.statsOpen);
+  root.dataset.guideOpen = String(runtime.infoPanel === 'guide');
+  root.dataset.supportOpen = String(runtime.infoPanel === 'support');
   renderFacingDirection(root, els, runtime.facing);
   root.setAttribute('aria-label', copy.appLabel);
   document.documentElement.lang = runtime.locale === 'zh' ? 'zh-CN' : 'en';
@@ -291,6 +317,16 @@ function render(root, els, runtime, feedback = null) {
     els.language.title = runtime.locale === 'en' ? 'Switch to Chinese' : 'Switch to English';
     els.language.setAttribute('aria-label', els.language.title);
   }
+  if (els.help) {
+    els.help.title = copy.buttons.help;
+    els.help.setAttribute('aria-label', copy.buttons.help);
+    els.help.setAttribute('aria-pressed', String(runtime.infoPanel === 'guide'));
+  }
+  if (els.support) {
+    els.support.title = copy.buttons.support;
+    els.support.setAttribute('aria-label', copy.buttons.support);
+    els.support.setAttribute('aria-pressed', String(runtime.infoPanel === 'support'));
+  }
   if (els.statsToggle) {
     els.statsToggle.setAttribute('aria-expanded', String(runtime.statsOpen));
   }
@@ -303,6 +339,7 @@ function render(root, els, runtime, feedback = null) {
     els.close.setAttribute('aria-label', copy.buttons.close);
   }
   renderStaticLabels(els, copy);
+  renderInfoPanels(els, copy);
   renderTypingStats(els, runtime.typing, copy, runtime);
   renderSoundSettings(els, runtime.sound, copy);
   if (els.spectrogram && plan?.spectrogramUrl) {
@@ -327,6 +364,17 @@ function renderStaticLabels(els, copy) {
   }
 }
 
+function renderInfoPanels(els, copy) {
+  if (els.guideTitle) els.guideTitle.textContent = copy.guide.title;
+  for (const line of els.guideLines || []) {
+    const key = line.dataset.guideLine;
+    line.textContent = copy.guide.lines[key] || key;
+  }
+  if (els.guideNote) els.guideNote.textContent = copy.guide.note;
+  if (els.supportTitle) els.supportTitle.textContent = copy.support.title;
+  if (els.supportCopy) els.supportCopy.textContent = copy.support.copy;
+}
+
 function renderTypingStats(els, typingStats, copy, runtime) {
   const summary = summarizeTypingStats(typingStats, { date: runtime.selectedDate });
   runtime.selectedDate = summary.selectedDate;
@@ -343,6 +391,23 @@ function renderTypingStats(els, typingStats, copy, runtime) {
   if (els.dateNext) els.dateNext.disabled = summary.availableDates.length <= 1;
   renderKeyGrid(els.keyGrid, summary.selectedKeyCounts);
   renderTopKeys(els.topKeys, summary.selectedTopKeys, copy);
+}
+
+async function enableGlobalListening(runtime, els) {
+  if (!window.birdCompanionShell?.setGlobalListening) return;
+  if (els.global) els.global.disabled = true;
+  try {
+    const status = await window.birdCompanionShell.setGlobalListening(true);
+    applyGlobalStatus(status || { enabled: false, available: false, error: 'Global hook unavailable' }, runtime, els);
+  } catch (error) {
+    applyGlobalStatus({
+      enabled: false,
+      available: false,
+      error: error?.message || String(error)
+    }, runtime, els);
+  } finally {
+    if (els.global) els.global.disabled = false;
+  }
 }
 
 function renderSoundSettings(els, sound, copy) {

@@ -31,6 +31,8 @@ import {
   assert.equal(getCopy('zh').settings.volume, '音');
   assert.equal(getCopy('en').stats.today, 'today');
   assert.equal(getCopy('zh').stats.today, '今天');
+  assert.equal(getCopy('en').buttons.help, 'Help');
+  assert.equal(getCopy('zh').support.title, '给我一杯咖啡');
 }
 
 console.log('i18n tests passed');
