@@ -43,7 +43,7 @@ function createWindow() {
   });
 
   mainWindow.setAlwaysOnTop(true, 'floating');
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
   mainWindow.once('ready-to-show', () => updateWindowFacingDirection());
   mainWindow.on('move', () => updateWindowFacingDirection());
 

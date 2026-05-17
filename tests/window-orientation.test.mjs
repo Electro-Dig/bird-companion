@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {
   chooseFacingDirection,
   normalizeFacingDirection
-} from '../window-orientation.mjs';
+} from '../src/main/window-orientation.mjs';
 
 {
   assert.equal(normalizeFacingDirection(), 'right');

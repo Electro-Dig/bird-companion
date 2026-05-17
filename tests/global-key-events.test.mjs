@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {
   createGlobalKeyTranslator,
   resolveUiohookKeyCodes
-} from '../global-key-events.mjs';
+} from '../src/main/global-key-events.mjs';
 
 const fakeUiohookKeys = {
   A: 30,

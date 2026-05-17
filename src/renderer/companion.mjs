@@ -17,6 +17,15 @@ import {
   recordTypingEvent,
   summarizeTypingStats
 } from './typing-stats.mjs';
+import {
+  DEFAULT_SETTINGS,
+  formatVolume,
+  nextFeedbackEvery,
+  normalizeFeedbackEvery,
+  normalizeVolume,
+  shouldEmitFeedback,
+  stepVolume
+} from './settings.mjs';
 
 export function mountCompanion({
   root,
@@ -32,6 +41,8 @@ export function mountCompanion({
     appearance: createInitialAppearanceState(readSavedBirdStyle()),
     locale: readSavedLocale(),
     facing: 'right',
+    sound: readSavedSoundSettings(),
+    feedbackKeyCount: 0,
     typing: createInitialTypingStats(readSavedTypingStats()),
     muted: false,
     global: {
@@ -57,10 +68,18 @@ export function mountCompanion({
     chirpField: root.querySelector('[data-chirp-field]'),
     featherField: root.querySelector('[data-feather-field]'),
     birdDirection: root.querySelector('[data-bird-direction]'),
+    birdStage: root.querySelector('[data-bird-stage]'),
+    keyBadgeLabel: root.querySelector('[data-key-badge-label]'),
+    totalKeysBadge: root.querySelector('[data-total-keys-badge]'),
     totalKeys: root.querySelector('[data-total-keys]'),
     sessionKeys: root.querySelector('[data-session-keys]'),
     currentKps: root.querySelector('[data-current-kps]'),
     statLabels: Array.from(root.querySelectorAll('[data-stat-label]')),
+    soundLabels: Array.from(root.querySelectorAll('[data-sound-label]')),
+    frequency: root.querySelector('[data-frequency]'),
+    volumeDown: root.querySelector('[data-volume-down]'),
+    volumeUp: root.querySelector('[data-volume-up]'),
+    volumeValue: root.querySelector('[data-volume-value]'),
     mute: root.querySelector('[data-mute]'),
     global: root.querySelector('[data-global]'),
     language: root.querySelector('[data-language]'),
@@ -72,6 +91,12 @@ export function mountCompanion({
   render(root, els, runtime);
 
   root.addEventListener('pointerdown', () => root.focus());
+  root.addEventListener('pointerenter', () => {
+    root.dataset.panelOpen = 'true';
+  });
+  root.addEventListener('pointerleave', () => {
+    delete root.dataset.panelOpen;
+  });
   root.addEventListener('keydown', event => {
     if (runtime.global.enabled) return;
     if (handleFeedbackKey(event.key, performance.now(), runtime, samples, dataBaseUrl, audioPool, els, root)) {
@@ -127,6 +152,33 @@ export function mountCompanion({
     render(root, els, runtime);
     root.focus();
   });
+  els.frequency?.addEventListener('click', () => {
+    runtime.sound = {
+      ...runtime.sound,
+      feedbackEvery: nextFeedbackEvery(runtime.sound.feedbackEvery)
+    };
+    saveSoundSettings(runtime.sound);
+    render(root, els, runtime);
+    root.focus();
+  });
+  els.volumeDown?.addEventListener('click', () => {
+    runtime.sound = {
+      ...runtime.sound,
+      volume: stepVolume(runtime.sound.volume, -1)
+    };
+    saveSoundSettings(runtime.sound);
+    render(root, els, runtime);
+    root.focus();
+  });
+  els.volumeUp?.addEventListener('click', () => {
+    runtime.sound = {
+      ...runtime.sound,
+      volume: stepVolume(runtime.sound.volume, 1)
+    };
+    saveSoundSettings(runtime.sound);
+    render(root, els, runtime);
+    root.focus();
+  });
   els.minimize?.addEventListener('click', () => {
     window.birdCompanionShell?.minimize?.();
   });
@@ -146,17 +198,24 @@ function handleFeedbackKey(key, now, runtime, samples, dataBaseUrl, audioPool, e
       state: runtime.state,
       samples,
       dataBaseUrl,
-      volume: 0.78
+      volume: runtime.sound.volume
     });
 
     if (!feedback.handled) return false;
 
     runtime.state = feedback.nextState;
+    runtime.feedbackKeyCount += 1;
     runtime.typing = recordTypingEvent(runtime.typing, {
       keyType: feedbackLabelToKeyType(feedback.label),
       now
     });
     saveTypingStats(runtime.typing);
+
+    if (!shouldEmitFeedback(runtime.feedbackKeyCount, runtime.sound.feedbackEvery)) {
+      render(root, els, runtime);
+      return true;
+    }
+
     runtime.lastPlan = feedback.plans.at(-1) || runtime.lastPlan;
     runtime.events = [{
       label: feedback.label,
@@ -206,7 +265,7 @@ function render(root, els, runtime, feedback = null) {
   }
   if (els.language) {
     els.language.textContent = copy.buttons.language;
-    els.language.title = runtime.locale === 'en' ? 'Switch to Chinese' : '切换到英文';
+    els.language.title = runtime.locale === 'en' ? 'Switch to Chinese' : 'Switch to English';
     els.language.setAttribute('aria-label', els.language.title);
   }
   if (els.minimize) {
@@ -218,7 +277,8 @@ function render(root, els, runtime, feedback = null) {
     els.close.setAttribute('aria-label', copy.buttons.close);
   }
   renderStaticLabels(els, copy);
-  renderTypingStats(els, runtime.typing);
+  renderTypingStats(els, runtime.typing, copy);
+  renderSoundSettings(els, runtime.sound, copy);
   if (els.spectrogram && plan?.spectrogramUrl) {
     els.spectrogram.src = plan.spectrogramUrl;
     els.spectrogram.hidden = false;
@@ -239,13 +299,40 @@ function renderStaticLabels(els, copy) {
     const key = label.dataset.statLabel;
     label.textContent = copy.stats[key] || key;
   }
+  for (const label of els.soundLabels || []) {
+    const key = label.dataset.soundLabel;
+    label.textContent = copy.settings[key] || key;
+  }
 }
 
-function renderTypingStats(els, typingStats) {
+function renderTypingStats(els, typingStats, copy) {
   const summary = summarizeTypingStats(typingStats);
+  if (els.keyBadgeLabel) els.keyBadgeLabel.textContent = copy.stats.keys;
+  if (els.totalKeysBadge) els.totalKeysBadge.textContent = formatTypingStat(summary.totalKeys);
   if (els.totalKeys) els.totalKeys.textContent = formatTypingStat(summary.totalKeys);
   if (els.sessionKeys) els.sessionKeys.textContent = formatTypingStat(summary.sessionKeys);
   if (els.currentKps) els.currentKps.textContent = summary.currentKps.toFixed(1);
+}
+
+function renderSoundSettings(els, sound, copy) {
+  const feedbackEvery = normalizeFeedbackEvery(sound.feedbackEvery);
+  const volume = normalizeVolume(sound.volume);
+  if (els.frequency) {
+    els.frequency.textContent = String(feedbackEvery);
+    els.frequency.title = runtimeTitle(copy.settings.rate, feedbackEvery === 1
+      ? '1 key'
+      : `${feedbackEvery} keys`);
+    els.frequency.setAttribute('aria-label', els.frequency.title);
+  }
+  if (els.volumeValue) els.volumeValue.textContent = formatVolume(volume);
+  if (els.volumeDown) {
+    els.volumeDown.title = runtimeTitle(copy.settings.volume, 'lower');
+    els.volumeDown.setAttribute('aria-label', els.volumeDown.title);
+  }
+  if (els.volumeUp) {
+    els.volumeUp.title = runtimeTitle(copy.settings.volume, 'raise');
+    els.volumeUp.setAttribute('aria-label', els.volumeUp.title);
+  }
 }
 
 function applyFacingDirection(direction, runtime, root, els) {
@@ -396,6 +483,30 @@ function saveLocale(locale) {
   }
 }
 
+function readSavedSoundSettings() {
+  try {
+    const raw = window.localStorage?.getItem('bird-companion-sound-settings');
+    const saved = raw ? JSON.parse(raw) : {};
+    return {
+      feedbackEvery: normalizeFeedbackEvery(saved.feedbackEvery ?? DEFAULT_SETTINGS.feedbackEvery),
+      volume: normalizeVolume(saved.volume ?? DEFAULT_SETTINGS.volume)
+    };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+function saveSoundSettings(settings) {
+  try {
+    window.localStorage?.setItem('bird-companion-sound-settings', JSON.stringify({
+      feedbackEvery: normalizeFeedbackEvery(settings.feedbackEvery),
+      volume: normalizeVolume(settings.volume)
+    }));
+  } catch {
+    // Sound settings can remain session-only if storage is unavailable.
+  }
+}
+
 function readSavedTypingStats() {
   try {
     const raw = window.localStorage?.getItem('bird-companion-typing-stats');
@@ -427,6 +538,10 @@ function displayLabel(label, copy) {
   if (label === 'chorus') return copy.keyLabels.chorus;
   if (label === 'rest') return copy.keyLabels.rest;
   return label;
+}
+
+function runtimeTitle(label, value) {
+  return `${label}: ${value}`;
 }
 
 function escapeHtml(value) {

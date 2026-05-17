@@ -5,7 +5,7 @@ import {
   createInitialFeedbackState,
   createMotionCue,
   summarizePulse
-} from '../feedback-engine.mjs';
+} from '../src/renderer/feedback-engine.mjs';
 
 const samples = [
   {
@@ -106,7 +106,30 @@ const baseUrl = 'http://localhost:8792/sound-similarity-lab/teaching-site/';
   assert.equal(first.plans.length, 1);
   assert.equal(first.plans[0].sample.id, 'soft-001');
   assert.equal(first.plans[0].audioUrl, 'http://localhost:8792/sound-similarity-lab/audio/soft.wav');
+  assert.ok(first.plans[0].volume <= 0.78);
   assert.equal(first.nextState.textLength, 1);
+}
+
+{
+  const quiet = createFeedbackEvent({
+    key: 'a',
+    now: 1000,
+    state: createInitialFeedbackState(),
+    samples,
+    dataBaseUrl: baseUrl,
+    volume: 0.25
+  });
+  const loud = createFeedbackEvent({
+    key: 'a',
+    now: 1000,
+    state: createInitialFeedbackState(),
+    samples,
+    dataBaseUrl: baseUrl,
+    volume: 2
+  });
+
+  assert.ok(quiet.plans[0].volume <= 0.25);
+  assert.ok(loud.plans[0].volume <= 1);
 }
 
 {

@@ -7,12 +7,13 @@ const COPY = {
       mute: 'Mute',
       unmute: 'Unmute',
       global: 'Toggle global listening',
-      language: '中文',
+      language: '中',
       minimize: 'Minimize',
       close: 'Close'
     },
     stats: {
       keys: 'keys',
+      total: 'total',
       session: 'session',
       kps: 'kps'
     },
@@ -22,6 +23,10 @@ const COPY = {
     },
     states: {
       waiting: 'waiting'
+    },
+    settings: {
+      rate: 'Rate',
+      volume: 'Vol'
     },
     moods: {
       idle: 'Idle branch',
@@ -49,9 +54,10 @@ const COPY = {
       close: '关闭'
     },
     stats: {
-      keys: '按键',
+      keys: '键',
+      total: '总数',
       session: '本次',
-      kps: '键速'
+      kps: '键/秒'
     },
     modes: {
       focus: '聚焦',
@@ -59,6 +65,10 @@ const COPY = {
     },
     states: {
       waiting: '等待'
+    },
+    settings: {
+      rate: '频',
+      volume: '音'
     },
     moods: {
       idle: '安静枝头',

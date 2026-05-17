@@ -2,6 +2,20 @@
 
 This project is strongest when it is treated as a small character system, not just a keyboard soundboard. The next work should deepen the relation between typing rhythm, bird behavior, and desktop presence.
 
+## Current Baseline: v0.2
+
+Version 0.2 establishes the app as a real desktop pet:
+
+- one canonical bird character, with the weaker alternate skins removed;
+- automatic left/right facing based on screen position;
+- persistent total key count plus session stats on hover;
+- feedback frequency control for every 1, 3, or 5 valid keys;
+- global volume control;
+- bilingual UI and README;
+- organized source folders for main process, renderer, docs, and tests.
+
+This gives the project a stable base: the next work should improve character believability and daily-use comfort rather than add many unrelated features.
+
 ## 1. Character Animation
 
 The current SVG rig already separates body, wing, beak, eye, tail, feet, and leaf. The next useful step is a proper action table:
@@ -96,3 +110,35 @@ This is not just a technical concern. It is part of the product experience.
 - Creative writing companion: promising if it adds gentle soundscapes, session moods, and exportable typing rituals.
 
 Recommended next milestone: keep the app as a desktop pet, improve the action rig, package a Windows preview build, then test whether the sound feedback remains pleasant over a full day of normal typing.
+
+## Suggested Milestones
+
+### v0.3: Better Character Acting
+
+- Fix foot/branch contact in every motion state.
+- Add explicit beak-open and beak-closed frames.
+- Add wing-flutter frames for fast typing.
+- Add drag and release reactions.
+- Add a small action scheduler so sound events and SVG part animations stay synchronized.
+
+### v0.4: Daily Companion Layer
+
+- Add daily key count separate from all-time total.
+- Add reset controls for session, day, and all-time stats.
+- Add soft daily summaries without storing text content.
+- Add optional quiet hours and night-mode call banks.
+- Add a small tray menu for mute, global listening, reset, language, and quit.
+
+### v0.5: Distribution Preview
+
+- Add Windows portable zip and installer builds.
+- Add first-run onboarding for global keyboard listening and privacy.
+- Add app icon, signed metadata if available, and release notes.
+- Add a simple update path or clear manual update instructions.
+
+### Later Experiments
+
+- Multiple bird personalities with distinct sound density and animation temperament.
+- Sprite-sheet renderer if the visual style moves toward pixel art.
+- Ambient writing mode: longer phrases, quieter calls, and session mood changes.
+- Community call packs, with license checks before importing sounds.

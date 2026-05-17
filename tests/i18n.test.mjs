@@ -4,7 +4,7 @@ import {
   getCopy,
   normalizeLocale,
   nextLocale
-} from '../i18n.mjs';
+} from '../src/renderer/i18n.mjs';
 
 {
   assert.equal(DEFAULT_LOCALE, 'en');
@@ -22,11 +22,13 @@ import {
 }
 
 {
-  assert.equal(getCopy('en').buttons.language, '中文');
+  assert.equal(getCopy('en').buttons.language, '中');
   assert.equal(getCopy('zh').buttons.language, 'EN');
   assert.equal(getCopy('en').moods.idle, 'Idle branch');
   assert.equal(getCopy('zh').moods.idle, '安静枝头');
   assert.equal(getCopy('unknown').stats.keys, 'keys');
+  assert.equal(getCopy('zh').settings.rate, '频');
+  assert.equal(getCopy('zh').settings.volume, '音');
 }
 
 console.log('i18n tests passed');

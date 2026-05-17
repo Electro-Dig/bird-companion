@@ -8,15 +8,16 @@ import {
   getBirdStyle,
   nextBirdStyle,
   normalizeBirdStyle
-} from '../bird-appearance.mjs';
+} from '../src/renderer/bird-appearance.mjs';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const rendererRoot = resolve(projectRoot, 'src', 'renderer');
 
 {
   assert.deepEqual(BIRD_STYLES.map(style => style.id), ['natural']);
   assert.equal(BIRD_STYLES.every(style => style.asset.endsWith('.svg')), true);
   assert.equal(BIRD_STYLES.every(style => style.button.length === 1), true);
-  assert.equal(BIRD_STYLES.every(style => existsSync(resolve(projectRoot, style.asset))), true);
+  assert.equal(BIRD_STYLES.every(style => existsSync(resolve(rendererRoot, style.asset))), true);
 }
 
 {

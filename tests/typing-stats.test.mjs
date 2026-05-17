@@ -4,7 +4,7 @@ import {
   formatTypingStat,
   recordTypingEvent,
   summarizeTypingStats
-} from '../typing-stats.mjs';
+} from '../src/renderer/typing-stats.mjs';
 
 {
   const stats = createInitialTypingStats();
@@ -16,7 +16,7 @@ import {
 
 {
   let stats = createInitialTypingStats({ totalKeys: 12 });
-  stats = recordTypingEvent(stats, { keyType: 'letter', now: 1000 });
+  stats = recordTypingEvent(stats, { keyType: 'letter', key: 'secret', rawText: 'private', now: 1000 });
   stats = recordTypingEvent(stats, { keyType: 'letter', now: 1200 });
   stats = recordTypingEvent(stats, { keyType: 'erase', now: 1600 });
 
@@ -25,6 +25,8 @@ import {
   assert.equal(stats.letterKeys, 2);
   assert.equal(stats.controlKeys, 1);
   assert.deepEqual(stats.recentTimes, [1000, 1200, 1600]);
+  assert.equal(Object.hasOwn(stats, 'key'), false);
+  assert.equal(Object.hasOwn(stats, 'rawText'), false);
 }
 
 {
