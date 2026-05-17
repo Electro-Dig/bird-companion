@@ -8,6 +8,7 @@ const isSmokeMode = isSmokeTest || isGlobalSmokeTest;
 let mainWindow;
 let currentFacingDirection = 'right';
 let orientationToolsPromise = null;
+let dragState = null;
 let globalHookState = {
   enabled: false,
   available: false,
@@ -83,6 +84,22 @@ function runSmokeCheck(window) {
         })
       `);
       if (!ready) throw new Error('renderer was not ready');
+      const interaction = await window.webContents.executeJavaScript(`
+        (() => {
+          const root = document.querySelector('[data-companion]');
+          const statsButton = document.querySelector('[data-stats-toggle]');
+          const dotCount = document.querySelectorAll('.dot-menu i').length;
+          root.dispatchEvent(new PointerEvent('pointerenter'));
+          const hoverReveals = root.dataset.panelOpen === 'true';
+          statsButton.click();
+          const statsOpens = root.dataset.statsOpen === 'true'
+            && statsButton.getAttribute('aria-expanded') === 'true';
+          return { hoverReveals, statsOpens, dotCount };
+        })()
+      `);
+      if (!interaction.hoverReveals) throw new Error('hover did not reveal panels');
+      if (!interaction.statsOpens) throw new Error('stats button did not open details');
+      if (interaction.dotCount !== 3) throw new Error('stats detail button dots were not rendered');
       if (isGlobalSmokeTest) {
         await startGlobalListening();
         const status = getGlobalStatus();
@@ -108,6 +125,34 @@ ipcMain.on('companion:close', () => {
 
 ipcMain.on('companion:minimize', () => {
   mainWindow?.minimize();
+});
+
+ipcMain.on('companion:drag-start', (event, payload) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  const point = normalizeDragPoint(payload);
+  if (!window || !point) return;
+  const bounds = window.getBounds();
+  dragState = {
+    windowId: window.id,
+    startScreenX: point.screenX,
+    startScreenY: point.screenY,
+    startWindowX: bounds.x,
+    startWindowY: bounds.y
+  };
+});
+
+ipcMain.on('companion:drag-move', (event, payload) => {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  const point = normalizeDragPoint(payload);
+  if (!window || !point || !dragState || dragState.windowId !== window.id) return;
+  const nextX = Math.round(dragState.startWindowX + point.screenX - dragState.startScreenX);
+  const nextY = Math.round(dragState.startWindowY + point.screenY - dragState.startScreenY);
+  window.setPosition(nextX, nextY, false);
+  updateWindowFacingDirection();
+});
+
+ipcMain.on('companion:drag-end', () => {
+  dragState = null;
 });
 
 ipcMain.handle('companion:get-global-status', () => getGlobalStatus());
@@ -228,6 +273,13 @@ function stopGlobalListening() {
   } finally {
     globalHookState.enabled = false;
   }
+}
+
+function normalizeDragPoint(point = {}) {
+  const screenX = Number(point.screenX);
+  const screenY = Number(point.screenY);
+  if (!Number.isFinite(screenX) || !Number.isFinite(screenY)) return null;
+  return { screenX, screenY };
 }
 
 function getGlobalStatus() {

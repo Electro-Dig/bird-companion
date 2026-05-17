@@ -1,6 +1,6 @@
 {
   "name": "bird-companion",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "A small always-on-top desktop bird companion driven by typing rhythm.",
   "author": "Electro-Dig",
@@ -15,12 +15,19 @@
     "start": "electron .",
     "smoke": "electron . --smoke-test",
     "dist:win": "electron-builder --win nsis",
+    "dist:win:portable": "electron-builder --win portable",
+    "dist:win:zip": "electron-builder --win zip",
     "bootstrap": "npm.cmd install --no-audit --no-fund"
   },
   "build": {
     "appId": "com.electrodig.birdcompanion",
     "productName": "Bird Companion",
-    "artifactName": "Bird Companion Setup ${version}.${ext}",
+    "artifactName": "Bird.Companion.${version}.${ext}",
+    "compression": "maximum",
+    "electronLanguages": [
+      "en-US",
+      "zh-CN"
+    ],
     "electronDist": "node_modules/electron/dist",
     "npmRebuild": false,
     "buildDependenciesFromSource": false,
@@ -30,7 +37,8 @@
     ],
     "files": [
       "src/**/*",
-      "data/**/*",
+      "data/samples-data.js",
+      "data/audio/**/*",
       "build/icon.ico",
       "package.json",
       "LICENSE.md",
@@ -49,12 +57,16 @@
       ]
     },
     "nsis": {
+      "artifactName": "Bird.Companion.Setup.${version}.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Bird Companion"
+    },
+    "portable": {
+      "artifactName": "Bird.Companion.Portable.${version}.${ext}"
     }
   },
   "dependencies": {

@@ -48,6 +48,8 @@ export function mountCompanion({
     sound: readSavedSoundSettings(),
     statsOpen: false,
     infoPanel: '',
+    hovered: false,
+    dragging: false,
     selectedDate: '',
     feedbackKeyCount: 0,
     typing: createInitialTypingStats(readSavedTypingStats()),
@@ -76,6 +78,7 @@ export function mountCompanion({
     featherField: root.querySelector('[data-feather-field]'),
     birdDirection: root.querySelector('[data-bird-direction]'),
     birdStage: root.querySelector('[data-bird-stage]'),
+    keyBadge: root.querySelector('[data-key-badge]'),
     keyBadgeLabel: root.querySelector('[data-key-badge-label]'),
     totalKeysBadge: root.querySelector('[data-total-keys-badge]'),
     statsToggle: root.querySelector('[data-stats-toggle]'),
@@ -112,11 +115,20 @@ export function mountCompanion({
 
   root.addEventListener('pointerdown', () => root.focus());
   root.addEventListener('pointerenter', () => {
-    root.dataset.panelOpen = 'true';
+    runtime.hovered = true;
+    updatePanelWake(root, runtime);
   });
   root.addEventListener('pointerleave', () => {
-    delete root.dataset.panelOpen;
+    runtime.hovered = false;
+    updatePanelWake(root, runtime);
   });
+  for (const zone of [els.birdStage, els.keyBadge, els.statsPopover]) {
+    zone?.addEventListener('pointerenter', () => {
+      runtime.hovered = true;
+      updatePanelWake(root, runtime);
+    });
+  }
+  bindWindowDrag(els.birdStage, root, runtime);
   root.addEventListener('keydown', event => {
     if (runtime.global.enabled) return;
     if (handleFeedbackKey(event.key, performance.now(), runtime, samples, dataBaseUrl, audioPool, els, root)) {
@@ -187,12 +199,13 @@ export function mountCompanion({
     render(root, els, runtime);
     root.focus();
   });
+  els.keyBadge?.addEventListener('click', event => {
+    if (event.target.closest('[data-stats-toggle]')) return;
+    toggleStatsPanel(runtime, root, els);
+  });
   els.statsToggle?.addEventListener('click', event => {
     event.stopPropagation();
-    runtime.statsOpen = !runtime.statsOpen;
-    runtime.infoPanel = '';
-    render(root, els, runtime);
-    root.focus();
+    toggleStatsPanel(runtime, root, els);
   });
   els.datePrev?.addEventListener('click', () => {
     runtime.selectedDate = adjacentStatsDate(runtime.typing, runtime.selectedDate, 1);
@@ -233,6 +246,76 @@ export function mountCompanion({
   setTimeout(() => root.focus(), 80);
   window.__BIRD_COMPANION_READY = true;
   return runtime;
+}
+
+function toggleStatsPanel(runtime, root, els) {
+  runtime.statsOpen = !runtime.statsOpen;
+  runtime.infoPanel = '';
+  render(root, els, runtime);
+  root.focus();
+}
+
+function updatePanelWake(root, runtime) {
+  if (runtime.hovered || runtime.statsOpen || runtime.infoPanel || runtime.dragging) {
+    root.dataset.panelOpen = 'true';
+    return;
+  }
+  delete root.dataset.panelOpen;
+}
+
+function bindWindowDrag(stage, root, runtime) {
+  if (!stage || !window.birdCompanionShell?.startDrag) return;
+  let pointerId = null;
+
+  stage.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || isInteractiveTarget(event.target)) return;
+    if (!event.target.closest('[data-drag-handle]')) return;
+    pointerId = event.pointerId;
+    runtime.dragging = true;
+    root.dataset.dragging = 'true';
+    updatePanelWake(root, runtime);
+    stage.setPointerCapture?.(event.pointerId);
+    window.birdCompanionShell.startDrag({
+      screenX: event.screenX,
+      screenY: event.screenY
+    });
+    event.preventDefault();
+  });
+
+  stage.addEventListener('pointermove', event => {
+    if (pointerId !== event.pointerId || !runtime.dragging) return;
+    window.birdCompanionShell.moveDrag?.({
+      screenX: event.screenX,
+      screenY: event.screenY
+    });
+  });
+
+  const endDrag = event => {
+    if (pointerId !== event.pointerId) return;
+    pointerId = null;
+    runtime.dragging = false;
+    delete root.dataset.dragging;
+    updatePanelWake(root, runtime);
+    window.birdCompanionShell.endDrag?.();
+  };
+
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+  stage.addEventListener('lostpointercapture', endDrag);
+}
+
+function isInteractiveTarget(target) {
+  return Boolean(target?.closest?.([
+    'button',
+    'input',
+    'label',
+    '[data-key-badge]',
+    '[data-sound-controls]',
+    '[data-stats-popover]',
+    '[data-guide-popover]',
+    '[data-support-popover]',
+    '[data-mini-panel]'
+  ].join(',')));
 }
 
 function handleFeedbackKey(key, now, runtime, samples, dataBaseUrl, audioPool, els, root) {
@@ -286,6 +369,8 @@ function render(root, els, runtime, feedback = null) {
   root.dataset.statsOpen = String(runtime.statsOpen);
   root.dataset.guideOpen = String(runtime.infoPanel === 'guide');
   root.dataset.supportOpen = String(runtime.infoPanel === 'support');
+  root.dataset.dragging = String(runtime.dragging);
+  updatePanelWake(root, runtime);
   renderFacingDirection(root, els, runtime.facing);
   root.setAttribute('aria-label', copy.appLabel);
   document.documentElement.lang = runtime.locale === 'zh' ? 'zh-CN' : 'en';
