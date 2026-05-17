@@ -32,7 +32,11 @@ import {
   assert.equal(getCopy('en').stats.today, 'today');
   assert.equal(getCopy('zh').stats.today, '今天');
   assert.equal(getCopy('en').buttons.help, 'Help');
+  assert.equal(getCopy('en').buttons.moreInfo, 'More');
+  assert.equal(getCopy('en').support.copy, 'If you like this app, you are welcome to support the maker.');
   assert.equal(getCopy('zh').support.title, '给我一杯咖啡');
+  assert.equal(getCopy('zh').buttons.moreInfo, '更多');
+  assert.equal(getCopy('zh').support.copy, '如果你喜欢这个应用，欢迎支持创作者。');
 }
 
 console.log('i18n tests passed');

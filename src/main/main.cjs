@@ -1,6 +1,6 @@
 const path = require('node:path');
 const os = require('node:os');
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, shell } = require('electron');
 
 const isSmokeTest = process.argv.includes('--smoke-test');
 const isGlobalSmokeTest = process.argv.includes('--smoke-global');
@@ -94,12 +94,40 @@ function runSmokeCheck(window) {
           statsButton.click();
           const statsOpens = root.dataset.statsOpen === 'true'
             && statsButton.getAttribute('aria-expanded') === 'true';
-          return { hoverReveals, statsOpens, dotCount };
+          return {
+            hoverReveals,
+            statsOpens,
+            dotCount
+          };
         })()
       `);
       if (!interaction.hoverReveals) throw new Error('hover did not reveal panels');
       if (!interaction.statsOpens) throw new Error('stats button did not open details');
       if (interaction.dotCount !== 3) throw new Error('stats detail button dots were not rendered');
+      window.webContents.send('companion:global-key', { key: 'a', at: Date.now() });
+      const sourceLink = await window.webContents.executeJavaScript(`
+        new Promise(resolve => {
+          const started = Date.now();
+          const check = () => {
+            const sourceButton = document.querySelector('[data-source-link]');
+            if (sourceButton && sourceButton.hidden === false) {
+              resolve({
+                visible: true,
+                label: sourceButton.textContent.trim(),
+                sourceUrl: sourceButton.dataset.sourceUrl || ''
+              });
+            } else if (Date.now() - started > 1500) {
+              resolve({ visible: false, label: '', sourceUrl: '' });
+            } else {
+              setTimeout(check, 50);
+            }
+          };
+          check();
+        })
+      `);
+      if (!sourceLink.visible) throw new Error('source link button was not visible');
+      if (!sourceLink.label) throw new Error('source link button had no label');
+      if (!sourceLink.sourceUrl.startsWith('https://xeno-canto.org/')) throw new Error('source link was not xeno-canto');
       if (isGlobalSmokeTest) {
         await startGlobalListening();
         const status = getGlobalStatus();
@@ -157,6 +185,12 @@ ipcMain.on('companion:drag-end', () => {
 
 ipcMain.handle('companion:get-global-status', () => getGlobalStatus());
 ipcMain.handle('companion:get-facing-direction', () => currentFacingDirection);
+ipcMain.handle('companion:open-source-url', (_event, sourceUrl) => {
+  const url = normalizeXenoCantoUrl(sourceUrl);
+  if (!url) return false;
+  shell.openExternal(url);
+  return true;
+});
 
 ipcMain.handle('companion:set-global-listening', async (_event, enabled) => {
   if (enabled) {
@@ -280,6 +314,18 @@ function normalizeDragPoint(point = {}) {
   const screenY = Number(point.screenY);
   if (!Number.isFinite(screenX) || !Number.isFinite(screenY)) return null;
   return { screenX, screenY };
+}
+
+function normalizeXenoCantoUrl(value) {
+  try {
+    const url = new URL(String(value || ''));
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== 'https:') return '';
+    if (host !== 'xeno-canto.org' && !host.endsWith('.xeno-canto.org')) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
 }
 
 function getGlobalStatus() {

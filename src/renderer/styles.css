@@ -909,16 +909,49 @@ body {
 }
 
 .mini-panel small {
-  overflow: hidden;
   color: rgba(23, 20, 15, 0.58);
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .mini-panel b {
   color: rgba(23, 20, 15, 0.76);
+}
+
+.bird-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.bird-meta-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-link {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid rgba(232, 106, 55, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.72);
+  color: var(--accent);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.source-link:hover,
+.source-link:focus-visible {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fffaf1;
+  outline: none;
 }
 
 @keyframes tilt {

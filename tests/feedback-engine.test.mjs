@@ -12,6 +12,7 @@ const samples = [
     id: 'soft-001',
     species: 'Soft Bulbul',
     latin: 'Avis mollis',
+    source_url: 'https://xeno-canto.org/100001',
     call_audio: '../audio/soft.wav',
     call_spectrogram: '../spec/soft.png',
     features: {
@@ -106,6 +107,7 @@ const baseUrl = 'http://localhost:8792/sound-similarity-lab/teaching-site/';
   assert.equal(first.plans.length, 1);
   assert.equal(first.plans[0].sample.id, 'soft-001');
   assert.equal(first.plans[0].audioUrl, 'http://localhost:8792/sound-similarity-lab/audio/soft.wav');
+  assert.equal(first.plans[0].sourceUrl, 'https://xeno-canto.org/100001');
   assert.ok(first.plans[0].volume <= 0.78);
   assert.equal(first.nextState.textLength, 1);
 }

@@ -106,6 +106,7 @@ export function mountCompanion({
     guideNote: root.querySelector('[data-guide-note]'),
     supportTitle: root.querySelector('[data-support-title]'),
     supportCopy: root.querySelector('[data-support-copy]'),
+    sourceLink: root.querySelector('[data-source-link]'),
     minimize: root.querySelector('[data-minimize]'),
     close: root.querySelector('[data-close]')
   };
@@ -241,6 +242,14 @@ export function mountCompanion({
   });
   els.close?.addEventListener('click', () => {
     window.birdCompanionShell?.close?.();
+  });
+  els.sourceLink?.addEventListener('click', event => {
+    event.stopPropagation();
+    const sourceUrl = els.sourceLink.dataset.sourceUrl;
+    if (sourceUrl) {
+      window.birdCompanionShell?.openSourceUrl?.(sourceUrl);
+    }
+    root.focus();
   });
 
   setTimeout(() => root.focus(), 80);
@@ -385,6 +394,14 @@ function render(root, els, runtime, feedback = null) {
     els.birdMeta.textContent = sample
       ? `${sample.id} / ${mood}`
       : runtime.global.error || copy.states.waiting;
+  }
+  if (els.sourceLink) {
+    const sourceUrl = plan?.sourceUrl || '';
+    els.sourceLink.hidden = !sourceUrl;
+    els.sourceLink.textContent = copy.buttons.moreInfo;
+    els.sourceLink.title = sourceUrl ? `${copy.buttons.moreInfo}: xeno-canto` : copy.buttons.moreInfo;
+    els.sourceLink.setAttribute('aria-label', sourceUrl ? `${copy.buttons.moreInfo}: xeno-canto` : copy.buttons.moreInfo);
+    els.sourceLink.dataset.sourceUrl = sourceUrl;
   }
   if (els.listenerMode) {
     els.listenerMode.textContent = runtime.global.enabled ? copy.modes.global : copy.modes.focus;

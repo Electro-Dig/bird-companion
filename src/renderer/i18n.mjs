@@ -10,6 +10,7 @@ const COPY = {
       language: '中',
       help: 'Help',
       support: 'Support the maker',
+      moreInfo: 'More',
       minimize: 'Minimize',
       close: 'Close'
     },
@@ -44,7 +45,7 @@ const COPY = {
     },
     support: {
       title: 'Buy me a coffee',
-      copy: 'If this bird keeps you company, you can support the maker with WeChat Pay.'
+      copy: 'If you like this app, you are welcome to support the maker.'
     },
     moods: {
       idle: 'Idle branch',
@@ -70,6 +71,7 @@ const COPY = {
       language: 'EN',
       help: '使用指南',
       support: '支持参与者',
+      moreInfo: '更多',
       minimize: '最小化',
       close: '关闭'
     },
@@ -104,7 +106,7 @@ const COPY = {
     },
     support: {
       title: '给我一杯咖啡',
-      copy: '如果这只小鸟陪你工作，可以用微信支付支持创作者。'
+      copy: '如果你喜欢这个应用，欢迎支持创作者。'
     },
     moods: {
       idle: '安静枝头',

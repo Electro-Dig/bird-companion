@@ -318,10 +318,28 @@ function makePlan(sample, {
     sample,
     audioUrl: resolveSampleAsset(sample, 'audio', dataBaseUrl),
     spectrogramUrl: resolveSampleAsset(sample, 'spectrogram', dataBaseUrl),
+    sourceUrl: resolveSampleSourceUrl(sample),
     volume: clamp(Number(volume.toFixed(3)), 0, 1),
     playbackRate: clamp(Number(playbackRate.toFixed(3)), 0.76, 1.22),
     delay
   };
+}
+
+function resolveSampleSourceUrl(sample) {
+  const raw = sample?.source_url || sample?.sourceUrl || sample?.url || (
+    sample?.xc_id ? `https://xeno-canto.org/${sample.xc_id}` : ''
+  );
+  if (!raw) return '';
+
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== 'https:') return '';
+    if (host !== 'xeno-canto.org' && !host.endsWith('.xeno-canto.org')) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
 }
 
 function pickFromBank(bank = [], seed = 0, offset = 0) {

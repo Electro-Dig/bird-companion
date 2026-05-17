@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('birdCompanionShell', {
   endDrag: () => ipcRenderer.send('companion:drag-end'),
   getGlobalStatus: () => ipcRenderer.invoke('companion:get-global-status'),
   setGlobalListening: enabled => ipcRenderer.invoke('companion:set-global-listening', Boolean(enabled)),
+  openSourceUrl: url => ipcRenderer.invoke('companion:open-source-url', String(url || '')),
   getFacingDirection: () => ipcRenderer.invoke('companion:get-facing-direction'),
   onFacingDirection: callback => {
     const handler = (_event, direction) => callback(direction);
