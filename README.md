@@ -28,22 +28,30 @@ Recommended for Windows:
 2. Download `Bird.Companion.Setup.0.2.3.exe`.
 3. Run the installer. It creates Start Menu and desktop shortcuts for Bird Companion.
 
+macOS local testing:
+
+1. Clone the repo on an Apple Silicon Mac.
+2. Run `npm install && npm run dist:mac:zip`.
+3. Open `dist/mac-arm64/Bird Companion.app` directly, or unzip `dist/Bird.Companion.mac-arm64.0.2.3.zip`.
+
 Other channels:
 
 - Source run: clone the repo and run `npm install && npm start`. This avoids an installer, but it downloads Electron through npm.
+- Mac test build: maintainers can run `npm run dist:mac` to create unsigned local-testing `dmg` and `zip` builds for Apple Silicon Macs.
 - Portable build: maintainers can run `npm run dist:win:portable` to create `Bird.Companion.Portable.0.2.3.exe`, a no-install Windows executable for GitHub Releases. It is usually smaller than the installer.
 - Zip build: maintainers can run `npm run dist:win:zip` to publish `Bird.Companion.0.2.3.zip`, an unpack-and-run archive. It is usually larger than the installer, but it can feel more transparent.
 
-Package-size note: Bird Companion is currently Electron-based, so every Windows build includes Chromium and Node. `v0.2.3` keeps only English/Chinese Electron locales and excludes unused spectrogram PNGs from packaged builds. A substantially smaller build would likely require a future Tauri/WebView2 rewrite.
+Package-size note: Bird Companion is currently Electron-based, so every desktop build includes Chromium and Node. `v0.2.3` keeps only English/Chinese Electron locales and excludes unused spectrogram PNGs from packaged builds. A substantially smaller build would likely require a future Tauri/WebView2 rewrite.
 
 Developer install:
 
 Requirements:
 
 - Windows 10/11
+- macOS on Apple Silicon for the current Mac test build
 - Node.js 20+
 
-```powershell
+```sh
 git clone https://github.com/Electro-Dig/bird-companion.git
 cd bird-companion
 npm install
@@ -114,10 +122,11 @@ Important constraints for future agents:
 ```powershell
 npm test
 npm run smoke
+npm run dist:mac:zip
 npm run dist:win
 ```
 
-`npm test` verifies the sound engine, global key translation, mascot style state, i18n copy, settings, window orientation, and typing stats. `npm run smoke` opens Electron in smoke-test mode and verifies the renderer boots successfully. `npm run dist:win` builds the Windows installer in `dist/`. `npm run dist:win:portable` and `npm run dist:win:zip` build no-install alternatives for maintainers.
+`npm test` verifies the sound engine, global key translation, mascot style state, i18n copy, settings, window orientation, and typing stats. `npm run smoke` opens Electron in smoke-test mode and verifies the renderer boots successfully. `npm run dist:mac:zip` builds an unsigned Apple Silicon macOS zip for local testing in `dist/`. `npm run dist:mac` builds both macOS `dmg` and `zip` targets. `npm run dist:win` builds the Windows installer in `dist/`. `npm run dist:win:portable` and `npm run dist:win:zip` build no-install alternatives for maintainers.
 
 ### Roadmap
 
@@ -173,22 +182,30 @@ Windows 推荐安装方式：
 2. 下载 `Bird.Companion.Setup.0.2.3.exe`。
 3. 运行安装包。安装后会创建开始菜单和桌面快捷方式。
 
+macOS 本机测试方式：
+
+1. 在 Apple Silicon Mac 上克隆仓库。
+2. 执行 `npm install && npm run dist:mac:zip`。
+3. 直接打开 `dist/mac-arm64/Bird Companion.app`，或解压 `dist/Bird.Companion.mac-arm64.0.2.3.zip` 后运行。
+
 其他分发方式：
 
 - 源码运行：克隆仓库后执行 `npm install && npm start`。这不需要运行安装包，但会通过 npm 下载 Electron。
+- Mac 测试构建：维护者可以执行 `npm run dist:mac`，为 Apple Silicon Mac 生成未签名的本地测试 `dmg` 和 `zip`。
 - 便携版：维护者可以执行 `npm run dist:win:portable`，生成 `Bird.Companion.Portable.0.2.3.exe`，这是无需安装的 Windows 可执行文件，通常会比安装包更小。
 - Zip 版：维护者可以执行 `npm run dist:win:zip`，发布 `Bird.Companion.0.2.3.zip` 解压即用压缩包。它通常比安装包更大，但对用户来说更透明。
 
-体积说明：Bird Companion 目前基于 Electron，所以 Windows 构建会自带 Chromium 和 Node。`v0.2.3` 只保留英文/中文 Electron 语言包，并从打包产物中排除了当前桌面宠物界面未使用的频谱图 PNG。若要显著缩小体积，后续大概率需要改为 Tauri 或 WebView2 版本。
+体积说明：Bird Companion 目前基于 Electron，所以桌面构建会自带 Chromium 和 Node。`v0.2.3` 只保留英文/中文 Electron 语言包，并从打包产物中排除了当前桌面宠物界面未使用的频谱图 PNG。若要显著缩小体积，后续大概率需要改为 Tauri 或 WebView2 版本。
 
 开发者安装方式：
 
 环境要求：
 
 - Windows 10/11
+- 当前 Mac 测试构建需要 Apple Silicon macOS
 - Node.js 20+
 
-```powershell
+```sh
 git clone https://github.com/Electro-Dig/bird-companion.git
 cd bird-companion
 npm install
@@ -259,10 +276,11 @@ bird-companion/
 ```powershell
 npm test
 npm run smoke
+npm run dist:mac:zip
 npm run dist:win
 ```
 
-`npm test` 会检查声音引擎、全局按键转换、小鸟形象状态、国际化文案、设置、窗口朝向和打字统计。`npm run smoke` 会以 smoke-test 模式打开 Electron，确认渲染进程可以正常启动。`npm run dist:win` 会在 `dist/` 里生成 Windows 安装包。`npm run dist:win:portable` 和 `npm run dist:win:zip` 可以给维护者生成无需安装的替代分发版本。
+`npm test` 会检查声音引擎、全局按键转换、小鸟形象状态、国际化文案、设置、窗口朝向和打字统计。`npm run smoke` 会以 smoke-test 模式打开 Electron，确认渲染进程可以正常启动。`npm run dist:mac:zip` 会在 `dist/` 里生成未签名的 Apple Silicon macOS 本机测试 zip。`npm run dist:mac` 会同时生成 macOS `dmg` 和 `zip`。`npm run dist:win` 会生成 Windows 安装包。`npm run dist:win:portable` 和 `npm run dist:win:zip` 可以给维护者生成无需安装的替代分发版本。
 
 ### 后续方向
 

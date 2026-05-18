@@ -14,10 +14,16 @@
     "test": "node tests/feedback-engine.test.mjs && node tests/global-key-events.test.mjs && node tests/bird-appearance.test.mjs && node tests/i18n.test.mjs && node tests/settings.test.mjs && node tests/window-orientation.test.mjs && node tests/typing-stats.test.mjs",
     "start": "electron .",
     "smoke": "electron . --smoke-test",
+    "dist:mac": "electron-builder --mac dmg zip --arm64",
+    "dist:mac:dmg": "electron-builder --mac dmg --arm64",
+    "dist:mac:dir": "electron-builder --mac dir --arm64",
+    "dist:mac:zip": "electron-builder --mac zip --arm64",
     "dist:win": "electron-builder --win nsis",
     "dist:win:portable": "electron-builder --win portable",
     "dist:win:zip": "electron-builder --win zip",
-    "bootstrap": "npm.cmd install --no-audit --no-fund"
+    "bootstrap": "npm install --no-audit --no-fund",
+    "bootstrap:mac": "npm install --no-audit --no-fund",
+    "bootstrap:win": "npm.cmd install --no-audit --no-fund"
   },
   "build": {
     "appId": "com.electrodig.birdcompanion",
@@ -40,10 +46,30 @@
       "data/samples-data.js",
       "data/audio/**/*",
       "build/icon.ico",
+      "build/icon.png",
       "package.json",
       "LICENSE.md",
       "THIRD_PARTY_NOTICES.md"
     ],
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.productivity",
+      "artifactName": "Bird.Companion.mac-${arch}.${version}.${ext}",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
     "win": {
       "icon": "build/icon.ico",
       "signAndEditExecutable": false,
