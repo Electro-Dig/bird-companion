@@ -1,6 +1,6 @@
 {
   "name": "bird-companion",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "description": "A small always-on-top desktop bird companion driven by typing rhythm.",
   "author": "Electro-Dig",
